@@ -67,7 +67,7 @@ docs/
 ## Installation
 
 ```bash
-git clone <repository-url>
+git clone <https://github.com/marcodallastella/tbml-detector>
 cd comtrade-mirror
 python -m venv .venv
 source .venv/bin/activate
@@ -94,7 +94,7 @@ Get a free API key at https://comtradeapi.un.org/.
 ```bash
 # 1. Scan all gold exports from Peru across all partners, 2023-2025
 #    (automatically fetches both sides of every corridor for mirror analysis)
-python -m src.cli scan --reporter 604 --commodity 7108 --period 2023,2024,2025
+python -m src.cli scan --reporter PER --commodity 7108 --period 2023,2024,2025
 
 # 2. Run the analysis engine to score discrepancies
 python -m src.cli analyze --commodity 7108
@@ -116,8 +116,8 @@ All commands are run from the project root via `python -m src.cli` or
 
 ```bash
 python src/cli.py fetch \
-  --reporter 842         \  # US (UN M49 code)
-  --partner 170          \  # Colombia
+  --reporter USA         \  # United States (ISO3)
+  --partner COL          \  # Colombia
   --commodity 7108       \  # Gold
   --period 2022,2023     \
   --frequency A          \  # A=annual, M=monthly
@@ -126,8 +126,8 @@ python src/cli.py fetch \
 
 | Flag | Required | Description |
 |---|---|---|
-| `--reporter` | Yes | Reporter country code(s), comma-separated (UN M49) |
-| `--partner` | Yes | Partner country code(s), comma-separated |
+| `--reporter` | Yes | Reporter country code(s), comma-separated — ISO3 (e.g. `USA,GBR`) or numeric Comtrade IDs |
+| `--partner` | Yes | Partner country code(s), comma-separated — ISO3 (e.g. `COL,PER`) or numeric Comtrade IDs |
 | `--commodity` | No | HS commodity code(s). Omit for all commodities |
 | `--period` | No | Period(s) as YYYY or YYYYMM. Omit for latest available |
 | `--frequency` | No | `A` (annual, default) or `M` (monthly) |
@@ -149,15 +149,15 @@ to compute mirror discrepancies without any manual follow-up fetches.
 
 ```bash
 # All gold exports from Peru to all partners, 2023-2025
-python -m src.cli scan --reporter 604 --commodity 7108 --period 2023,2024,2025
+python -m src.cli scan --reporter PER --commodity 7108 --period 2023,2024,2025
 
 # All precious metals from UK, annual
-python -m src.cli scan --reporter 826 --commodity 71 --period 2023
+python -m src.cli scan --reporter GBR --commodity 71 --period 2023
 ```
 
 | Flag | Required | Description |
 |---|---|---|
-| `--reporter` | Yes | Reporter country code (single, UN M49) |
+| `--reporter` | Yes | Reporter country code (single) — ISO3 (e.g. `PER`) or numeric Comtrade ID |
 | `--commodity` | No | HS code(s) to filter, comma-separated |
 | `--period` | No | Period(s) as YYYY or YYYYMM, comma-separated |
 | `--frequency` | No | `A` (annual, default) or `M` (monthly) |
@@ -383,8 +383,11 @@ fetch design downloads only the data needed for your investigation.
 
 ## Disclaimer
 
-This project is intended for use by investigative journalists and researchers.
+This project is intended for use by journalists and researchers.
 Findings from this tool are statistical indicators, not evidence of wrongdoing.
 Always corroborate with additional sources -- corporate registry data, shipping
 records, financial disclosures, and local investigative reporting -- before
 publication.
+
+## Contact
+[m.dallastella@pm.me](mailto:m.dallastella@pm.me)

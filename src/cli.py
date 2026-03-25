@@ -23,6 +23,7 @@ if str(_project_root) not in sys.path:
 load_dotenv(_project_root / ".env")
 
 from src.pipeline import ComtradeAPI, TradeCleaner, TradeStorage
+from src.pipeline.country_codes import resolve_code
 from src.analysis.mirror import MirrorAnalyzer
 from src.analysis.anomaly import AnomalyDetector
 from src.analysis.scoring import SeverityScorer
@@ -41,8 +42,8 @@ def cmd_fetch(args: argparse.Namespace) -> None:
     storage = TradeStorage(args.db)
     storage.initialize()
 
-    reporters = [int(c) for c in args.reporter.split(",")]
-    partners = [int(c) for c in args.partner.split(",")]
+    reporters = [resolve_code(c) for c in args.reporter.split(",")]
+    partners = [resolve_code(c) for c in args.partner.split(",")]
     commodities = args.commodity.split(",") if args.commodity else None
     periods = args.period.split(",") if args.period else None
 
@@ -360,11 +361,11 @@ def main() -> None:
     )
     fetch_parser.add_argument(
         "--reporter", required=True,
-        help="Reporter country code(s), comma-separated",
+        help="Reporter country code(s), comma-separated. ISO3 (e.g. USA,GBR) or numeric Comtrade IDs",
     )
     fetch_parser.add_argument(
         "--partner", required=True,
-        help="Partner country code(s), comma-separated",
+        help="Partner country code(s), comma-separated. ISO3 (e.g. COL,PER) or numeric Comtrade IDs",
     )
     fetch_parser.add_argument(
         "--commodity", default=None,
@@ -389,8 +390,8 @@ def main() -> None:
         "scan", help="Scan all partners for a country",
     )
     scan_parser.add_argument(
-        "--reporter", required=True, type=int,
-        help="Reporter country code",
+        "--reporter", required=True, type=resolve_code,
+        help="Reporter country code: ISO3 (e.g. PER) or numeric Comtrade ID (e.g. 604)",
     )
     scan_parser.add_argument(
         "--commodity", default=None,
