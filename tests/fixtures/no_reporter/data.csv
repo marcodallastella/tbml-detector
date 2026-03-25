@@ -1,0 +1,13 @@
+year,reporter_code,reporter_iso,reporter_name,partner_code,partner_iso,partner_name,flow,commodity_code,commodity_description,trade_value_usd,netweight_kg,qty_unit,qty
+2019,784,ARE,United Arab Emirates,408,PRK,North Korea,Export,2709,Petroleum oils crude,0,0,kg,0
+2020,784,ARE,United Arab Emirates,408,PRK,North Korea,Export,2709,Petroleum oils crude,0,0,kg,0
+2021,784,ARE,United Arab Emirates,408,PRK,North Korea,Export,2709,Petroleum oils crude,0,0,kg,0
+2019,156,CHN,China,408,PRK,North Korea,Export,2710,Petroleum oils not crude,85000000,320000000,kg,320000000
+2020,156,CHN,China,408,PRK,North Korea,Export,2710,Petroleum oils not crude,78000000,290000000,kg,290000000
+2021,156,CHN,China,408,PRK,North Korea,Export,2710,Petroleum oils not crude,62000000,230000000,kg,230000000
+2019,156,CHN,China,408,PRK,North Korea,Export,2523,Portland cement,12000000,450000000,kg,450000000
+2020,156,CHN,China,408,PRK,North Korea,Export,2523,Portland cement,10000000,380000000,kg,380000000
+2021,156,CHN,China,408,PRK,North Korea,Export,2523,Portland cement,8000000,300000000,kg,300000000
+2019,410,KOR,South Korea,408,PRK,North Korea,Export,1005,Maize corn,0,0,kg,0
+2020,410,KOR,South Korea,408,PRK,North Korea,Export,1005,Maize corn,0,0,kg,0
+2021,410,KOR,South Korea,408,PRK,North Korea,Export,1005,Maize corn,0,0,kg,0

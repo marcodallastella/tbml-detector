@@ -1,0 +1,125 @@
+# Mirror Trade Analysis Configuration
+# All thresholds and adjustment factors for the detection engine.
+
+# CIF/FOB adjustment factors by transport mode
+cif_fob:
+  default_ratio: 1.07
+  ratios:
+    maritime_bulk: 1.07
+    maritime_container: 1.09
+    air: 1.15
+    land: 1.03
+    pipeline: 1.02
+  # Corridor-level defaults when transport mode is unknown
+  corridor_defaults:
+    same_continent_land_border: 1.03
+    same_continent_no_border: 1.07
+    intercontinental: 1.10
+    unknown: 1.07
+
+# Reporting lag correction
+lag_correction:
+  annual_smoothing_window: 2   # years
+  monthly_smoothing_window: 3  # months
+
+# Minimum trade values to include in anomaly detection
+min_value_thresholds:
+  annual_usd: 10000
+  monthly_usd: 1000
+
+# Z-score parameters
+z_score:
+  min_history_years: 5
+  thresholds:
+    elevated: 2.0
+    high: 3.0
+    extreme: 5.0
+  rolling_window_months: 12
+
+# Benford's law analysis
+benford:
+  min_samples: 50
+  p_value_threshold: 0.01
+  mad_threshold: 0.015
+
+# Asymmetry test
+asymmetry:
+  min_samples: 5
+
+# Severity scoring
+severity:
+  tiers:
+    noise_max: 19
+    low_max: 39
+    medium_max: 59
+    high_max: 79
+  # Corridor risk factor points
+  corridor_risk_points:
+    secrecy_jurisdiction: 5
+    re_export_hub: 3
+    free_trade_zone: 4
+    non_reporting: 5
+    narcotics_route: 5
+  # Commodity risk by HS chapter
+  commodity_risk:
+    "71": 20    # Gold, precious metals/stones
+    "97": 18    # Art, antiques, collectibles
+    "27": 15    # Petroleum, crude oil
+    "30": 15    # Pharmaceuticals
+    "84": 12    # Machinery
+    "85": 12    # Electronics, semiconductors
+    "28": 10    # Chemicals
+    "29": 10    # Organic chemicals
+    default: 5
+  # Commodity risk ranges (applied after specific chapter lookup)
+  commodity_risk_ranges:
+    - start: 50
+      end: 63
+      score: 8    # Textiles, apparel
+    - start: 1
+      end: 24
+      score: 5    # Agricultural products
+  # Adjustments
+  re_export_adjustment: -10
+  rounding_adjustment: -5
+
+# HS code classification tolerance
+classification:
+  problematic_hs_chapters: [27, 30, 38, 71, 84, 85]
+  tolerance_factor: 1.5
+
+# Minimum discrepancy to flag
+min_d_rel_to_flag: 0.10  # 10%
+
+# Known re-export hubs (ISO3 codes)
+re_export_hubs:
+  - HKG  # Hong Kong SAR
+  - SGP  # Singapore
+  - NLD  # Netherlands
+  - BEL  # Belgium
+  - ARE  # UAE
+  - PAN  # Panama
+  - CHE  # Switzerland
+
+# Non-reporting / late-reporting countries (ISO3 codes)
+non_reporting_countries:
+  chronic:
+    - AFG  # Afghanistan
+    - TCD  # Chad
+    - COD  # DR Congo
+    - GNQ  # Equatorial Guinea
+    - ERI  # Eritrea
+    - GNB  # Guinea-Bissau
+    - LBY  # Libya
+    - PRK  # North Korea
+    - SOM  # Somalia
+    - SSD  # South Sudan
+    - SYR  # Syria
+    - TKM  # Turkmenistan
+    - YEM  # Yemen
+  intermittent:
+    - IRQ  # Iraq
+    - LBN  # Lebanon
+    - MMR  # Myanmar
+    - VEN  # Venezuela
+    - ZWE  # Zimbabwe

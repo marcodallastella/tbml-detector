@@ -1,0 +1,17 @@
+year,reporter_code,reporter_iso,reporter_name,partner_code,partner_iso,partner_name,flow,commodity_code,commodity_description,trade_value_usd,netweight_kg,qty_unit,qty
+2020,158,TWN,Taiwan,702,SGP,Singapore,Export,8542,Electronic integrated circuits,2800000000,450000,kg,450000
+2020,702,SGP,Singapore,158,TWN,Taiwan,Import,8542,Electronic integrated circuits,2750000000,445000,kg,445000
+2020,702,SGP,Singapore,276,DEU,Germany,Export,8542,Electronic integrated circuits,3200000000,520000,kg,520000
+2020,276,DEU,Germany,702,SGP,Singapore,Import,8542,Electronic integrated circuits,1800000000,290000,kg,290000
+2021,158,TWN,Taiwan,702,SGP,Singapore,Export,8542,Electronic integrated circuits,3100000000,470000,kg,470000
+2021,702,SGP,Singapore,158,TWN,Taiwan,Import,8542,Electronic integrated circuits,3050000000,465000,kg,465000
+2021,702,SGP,Singapore,276,DEU,Germany,Export,8542,Electronic integrated circuits,3800000000,580000,kg,580000
+2021,276,DEU,Germany,702,SGP,Singapore,Import,8542,Electronic integrated circuits,2100000000,320000,kg,320000
+2022,158,TWN,Taiwan,702,SGP,Singapore,Export,8542,Electronic integrated circuits,3400000000,500000,kg,500000
+2022,702,SGP,Singapore,158,TWN,Taiwan,Import,8542,Electronic integrated circuits,3350000000,495000,kg,495000
+2022,702,SGP,Singapore,276,DEU,Germany,Export,8542,Electronic integrated circuits,4200000000,630000,kg,630000
+2022,276,DEU,Germany,702,SGP,Singapore,Import,8542,Electronic integrated circuits,2400000000,360000,kg,360000
+2020,702,SGP,Singapore,276,DEU,Germany,Export,8542,Electronic integrated circuits,3200000000,520000,kg,520000
+2020,702,SGP,Singapore,0,WLD,World,Export,8542,Electronic integrated circuits,18500000000,3000000,kg,3000000
+2021,702,SGP,Singapore,0,WLD,World,Export,8542,Electronic integrated circuits,21000000000,3300000,kg,3300000
+2022,702,SGP,Singapore,0,WLD,World,Export,8542,Electronic integrated circuits,24000000000,3600000,kg,3600000

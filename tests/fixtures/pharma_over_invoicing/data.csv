@@ -1,0 +1,13 @@
+year,reporter_code,reporter_iso,reporter_name,partner_code,partner_iso,partner_name,flow,commodity_code,commodity_description,trade_value_usd,netweight_kg,qty_unit,qty
+2019,756,CHE,Switzerland,566,NGA,Nigeria,Export,3004,Medicaments in measured doses,120000000,240000,kg,240000
+2019,566,NGA,Nigeria,756,CHE,Switzerland,Import,3004,Medicaments in measured doses,118500000,238000,kg,238000
+2020,756,CHE,Switzerland,566,NGA,Nigeria,Export,3004,Medicaments in measured doses,145000000,250000,kg,250000
+2020,566,NGA,Nigeria,756,CHE,Switzerland,Import,3004,Medicaments in measured doses,143000000,248000,kg,248000
+2021,756,CHE,Switzerland,566,NGA,Nigeria,Export,3004,Medicaments in measured doses,180000000,260000,kg,260000
+2021,566,NGA,Nigeria,756,CHE,Switzerland,Import,3004,Medicaments in measured doses,178000000,258000,kg,258000
+2022,756,CHE,Switzerland,566,NGA,Nigeria,Export,3004,Medicaments in measured doses,210000000,270000,kg,270000
+2022,566,NGA,Nigeria,756,CHE,Switzerland,Import,3004,Medicaments in measured doses,208000000,268000,kg,268000
+2019,276,DEU,Germany,566,NGA,Nigeria,Export,3004,Medicaments in measured doses,95000000,300000,kg,300000
+2019,566,NGA,Nigeria,276,DEU,Germany,Import,3004,Medicaments in measured doses,94000000,298000,kg,298000
+2020,276,DEU,Germany,566,NGA,Nigeria,Export,3004,Medicaments in measured doses,100000000,320000,kg,320000
+2020,566,NGA,Nigeria,276,DEU,Germany,Import,3004,Medicaments in measured doses,99000000,318000,kg,318000
