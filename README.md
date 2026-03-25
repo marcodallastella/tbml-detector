@@ -92,17 +92,20 @@ Get a free API key at https://comtradeapi.un.org/.
 ## Quick Start
 
 ```bash
-# 1. Fetch bilateral trade data (US <-> Colombia, gold, 2020-2023)
-python src/cli.py fetch --reporter 842 --partner 170 --commodity 7108 \
-  --period 2020,2021,2022,2023
+# 1. Scan all gold exports from Peru across all partners, 2023-2025
+#    (automatically fetches both sides of every corridor for mirror analysis)
+python -m src.cli scan --reporter 604 --commodity 7108 --period 2023,2024,2025
 
-# 2. Launch the dashboard to explore results
-streamlit run src/dashboard/app.py
+# 2. Run the analysis engine to score discrepancies
+python -m src.cli analyze --commodity 7108
+
+# 3. Launch the dashboard to explore results
+.venv/bin/streamlit run src/dashboard/app.py
 ```
 
-The fetch command downloads data from UN Comtrade, runs it through the cleaning
-pipeline, constructs mirror pairs, runs the anomaly detection engine, and stores
-scored results in the SQLite database. The dashboard then reads from the database.
+`scan` collects both the reporter's view and every partner's mirror view in one
+command, then `analyze` computes discrepancies and scores them. The dashboard
+reads from the database (`data/comtrade.db`).
 
 ## CLI Reference
 
@@ -133,20 +136,36 @@ python src/cli.py fetch \
 
 ### `scan` -- Broad scan across all partners for a country
 
+The primary command for mirror analysis investigations. Collects **both sides**
+of every trade corridor automatically:
+
+1. **Pass 1** -- Fetches all trade flows reported by the target country across
+   all its partners (the reporter's own view).
+2. **Pass 2** -- For each partner identified in pass 1, fetches that partner's
+   reported trade with the target country (the mirror side).
+
+This two-pass approach means a single `scan` command gathers all the data needed
+to compute mirror discrepancies without any manual follow-up fetches.
+
 ```bash
-python src/cli.py scan \
-  --reporter 826       \  # UK
-  --commodity 71       \  # Precious metals/stones chapter
-  --period 2023        \
-  --frequency A
+# All gold exports from Peru to all partners, 2023-2025
+python -m src.cli scan --reporter 604 --commodity 7108 --period 2023,2024,2025
+
+# All precious metals from UK, annual
+python -m src.cli scan --reporter 826 --commodity 71 --period 2023
 ```
 
 | Flag | Required | Description |
 |---|---|---|
-| `--reporter` | Yes | Reporter country code (single) |
-| `--commodity` | No | HS code(s) to filter |
-| `--period` | No | Period(s) |
-| `--frequency` | No | `A` or `M` |
+| `--reporter` | Yes | Reporter country code (single, UN M49) |
+| `--commodity` | No | HS code(s) to filter, comma-separated |
+| `--period` | No | Period(s) as YYYY or YYYYMM, comma-separated |
+| `--frequency` | No | `A` (annual, default) or `M` (monthly) |
+| `--db` | No | Path to SQLite database (default: `data/comtrade.db`) |
+
+**Note:** Pass 2 makes one API call per partner country. For broad commodities
+with many trade partners this can be hundreds of calls — the built-in rate
+limiter handles this automatically but the scan may take several minutes.
 
 ### `update` -- Refresh all previously fetched corridors
 

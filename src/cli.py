@@ -104,7 +104,18 @@ def cmd_fetch(args: argparse.Namespace) -> None:
 
 
 def cmd_scan(args: argparse.Namespace) -> None:
-    """Broad scan across all partners for a given country and commodity."""
+    """Broad scan across all partners for a given country and commodity.
+
+    Fetches data in two passes to collect both sides of every mirror pair:
+    1. Reporter's own view of all its trade flows (all partners).
+    2. Each partner's view of its trade with the reporter.
+
+    Both sides are required for mirror analysis. Without pass 2, only flows
+    where the partner happens to be the reporter of another record can be
+    compared.
+    """
+    from src.pipeline.comtrade_api import WORLD_CODE, AREAS_NES_CODE
+
     api = ComtradeAPI()
     cleaner = TradeCleaner()
     storage = TradeStorage(args.db)
@@ -113,37 +124,104 @@ def cmd_scan(args: argparse.Namespace) -> None:
     commodities = args.commodity.split(",") if args.commodity else None
     periods = args.period.split(",") if args.period else None
 
-    logger.info("Scanning all partners for reporter %d", args.reporter)
-    try:
-        raw_records = api.scan_all_partners(
-            reporter_code=args.reporter,
-            commodity_code=commodities,
-            period=periods,
-            frequency=args.frequency,
-        )
+    # --- Pass 1: reporter's own view, one period at a time ---
+    # Iterating per period avoids the API returning nothing when one requested
+    # period has no data yet (e.g. the current year before data is published).
+    logger.info("Pass 1: scanning all partners as reported by %d", args.reporter)
+    normalized: list[dict] = []
+    pass1_raw = pass1_clean = 0
 
-        normalized = [api.normalize_record(r) for r in raw_records]
-        raw_count = storage.insert_raw_records(normalized, raw_records)
-
-        cleaned = cleaner.clean_records(normalized)
-        clean_count = storage.insert_cleaned_records(cleaned)
-
-        for p in (periods or [""]):
-            storage.log_fetch(
+    for period in (periods or [None]):
+        try:
+            raw_records = api.scan_all_partners(
                 reporter_code=args.reporter,
-                period=p,
+                commodity_code=commodities,
+                period=period,
                 frequency=args.frequency,
-                record_count=raw_count,
             )
 
-        logger.info(
-            "Scan complete: %d raw, %d cleaned records stored",
-            raw_count, clean_count,
-        )
+            if not raw_records:
+                logger.info("  Period %s: no data available, skipping", period)
+                continue
 
-    except Exception as e:
-        logger.error("Scan error: %s", e)
+            period_normalized = [api.normalize_record(r) for r in raw_records]
+            normalized.extend(period_normalized)
+            pass1_raw += storage.insert_raw_records(period_normalized, raw_records)
+            pass1_clean += storage.insert_cleaned_records(cleaner.clean_records(period_normalized))
 
+            storage.log_fetch(
+                reporter_code=args.reporter,
+                period=period or "",
+                frequency=args.frequency,
+                record_count=len(raw_records),
+            )
+            logger.info("  Period %s: %d records", period, len(raw_records))
+
+        except Exception as e:
+            logger.error("  Period %s scan error: %s", period, e)
+
+    if not normalized:
+        logger.warning("Pass 1 returned no data for any period — aborting")
+        storage.close()
+        return
+
+    logger.info("Pass 1 complete: %d raw, %d cleaned records", pass1_raw, pass1_clean)
+
+    # --- Pass 2: mirror side — each partner reports its trade with the reporter ---
+    # Collect the unique real partner codes seen in pass 1 (skip world/NES aggregates)
+    partner_codes = {
+        r["partner_code"] for r in normalized
+        if r.get("partner_code") not in (WORLD_CODE, AREAS_NES_CODE, None)
+    }
+
+    if not partner_codes:
+        logger.warning("No individual partners found in pass 1 — skipping mirror fetch")
+        storage.close()
+        return
+
+    logger.info(
+        "Pass 2: fetching mirror data from %d partner countries as reporters",
+        len(partner_codes),
+    )
+
+    total_raw = total_clean = 0
+    for partner in sorted(partner_codes):
+        partner_raw = partner_clean = 0
+        for period in (periods or [None]):
+            try:
+                partner_records = api.get_trade_data(
+                    reporter_code=partner,
+                    partner_code=args.reporter,
+                    commodity_code=commodities,
+                    period=period,
+                    frequency=args.frequency,
+                )
+
+                if not partner_records:
+                    continue
+
+                p_normalized = [api.normalize_record(r) for r in partner_records]
+                partner_raw += storage.insert_raw_records(p_normalized, partner_records)
+                partner_clean += storage.insert_cleaned_records(cleaner.clean_records(p_normalized))
+
+                storage.log_fetch(
+                    reporter_code=partner,
+                    partner_code=args.reporter,
+                    commodity_code=args.commodity,
+                    period=period or "",
+                    frequency=args.frequency,
+                    record_count=len(partner_records),
+                )
+
+            except Exception as e:
+                logger.error("  Partner %d period %s error: %s", partner, period, e)
+
+        if partner_raw:
+            logger.info("  Partner %d: %d raw, %d cleaned", partner, partner_raw, partner_clean)
+        total_raw += partner_raw
+        total_clean += partner_clean
+
+    logger.info("Pass 2 complete: %d raw, %d cleaned records stored", total_raw, total_clean)
     storage.close()
 
 

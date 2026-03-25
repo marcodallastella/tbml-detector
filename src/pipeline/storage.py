@@ -176,7 +176,7 @@ class TradeStorage:
 
             try:
                 self.conn.execute(
-                    """INSERT OR REPLACE INTO trade_records (
+                    """INSERT INTO trade_records (
                         reporter_code, partner_code, commodity_code, flow_code,
                         period, frequency, trade_value_usd, cif_value_usd,
                         fob_value_usd, net_weight_kg, qty, qty_unit_code,
@@ -190,7 +190,27 @@ class TradeStorage:
                         :qty_unit_desc, :is_re_export, :is_confidential,
                         :customs_code, :mot_code, :mot_desc, :classification,
                         :ref_year, :dataset_code, :raw_json, datetime('now')
-                    )""",
+                    )
+                    ON CONFLICT(reporter_code, partner_code, commodity_code, flow_code, period)
+                    DO UPDATE SET
+                        frequency = excluded.frequency,
+                        trade_value_usd = excluded.trade_value_usd,
+                        cif_value_usd = excluded.cif_value_usd,
+                        fob_value_usd = excluded.fob_value_usd,
+                        net_weight_kg = excluded.net_weight_kg,
+                        qty = excluded.qty,
+                        qty_unit_code = excluded.qty_unit_code,
+                        qty_unit_desc = excluded.qty_unit_desc,
+                        is_re_export = excluded.is_re_export,
+                        is_confidential = excluded.is_confidential,
+                        customs_code = excluded.customs_code,
+                        mot_code = excluded.mot_code,
+                        mot_desc = excluded.mot_desc,
+                        classification = excluded.classification,
+                        ref_year = excluded.ref_year,
+                        dataset_code = excluded.dataset_code,
+                        raw_json = excluded.raw_json,
+                        updated_at = datetime('now')""",
                     {**record, "raw_json": raw_json},
                 )
                 count += 1
@@ -238,7 +258,7 @@ class TradeStorage:
 
             try:
                 self.conn.execute(
-                    """INSERT OR REPLACE INTO cleaned_records (
+                    """INSERT INTO cleaned_records (
                         raw_record_id, reporter_code, partner_code,
                         commodity_code, flow_code, period, frequency,
                         trade_value_usd, fob_value_usd, net_weight_kg,
@@ -253,7 +273,24 @@ class TradeStorage:
                         :is_re_export, :is_confidential, :has_quantity,
                         :has_weight, :quality_score, :cleaning_notes,
                         datetime('now')
-                    )""",
+                    )
+                    ON CONFLICT(reporter_code, partner_code, commodity_code, flow_code, period)
+                    DO UPDATE SET
+                        raw_record_id = excluded.raw_record_id,
+                        frequency = excluded.frequency,
+                        trade_value_usd = excluded.trade_value_usd,
+                        fob_value_usd = excluded.fob_value_usd,
+                        net_weight_kg = excluded.net_weight_kg,
+                        qty_normalized = excluded.qty_normalized,
+                        qty_unit_normalized = excluded.qty_unit_normalized,
+                        unit_price_usd = excluded.unit_price_usd,
+                        is_re_export = excluded.is_re_export,
+                        is_confidential = excluded.is_confidential,
+                        has_quantity = excluded.has_quantity,
+                        has_weight = excluded.has_weight,
+                        quality_score = excluded.quality_score,
+                        cleaning_notes = excluded.cleaning_notes,
+                        cleaned_at = datetime('now')""",
                     {**record, "raw_record_id": raw_id},
                 )
                 count += 1
